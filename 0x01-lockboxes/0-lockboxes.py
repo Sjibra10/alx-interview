@@ -3,17 +3,19 @@
 
 
 def canUnlockAll(boxes):
-    """unloack function"""
-    n = len(boxes)
-    visited = set()
-    stack = [0]
+    """unlock boxes"""
+    if not boxes:
+        return False
 
-    while stack:
-        box = stack.pop()
-        visited.add(box)
+    opened_boxes = {0}
 
-        for key in boxes[box]:
-            if key < n and key not in visited:
-                stack.append(key)
+    keys = set(boxes[0])
 
-    return len(visited) == n
+    while keys:
+        current_key = keys.pop()
+
+        if current_key < len(boxes) and current_key not in opened_boxes:
+            opened_boxes.add(current_key)
+            keys.update(boxes[current_key])
+
+    return len(opened_boxes) == len(boxes)
