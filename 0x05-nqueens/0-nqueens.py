@@ -1,53 +1,62 @@
 #!/usr/bin/python3
-"""Module"""
+"""main fikle"""
+
+
 import sys
 
 
-def is_safe(board, row, col):
-    """Check if there is a queen in the same column"""
-    for i in range(row):
-        if board[i] == col:
+def is_safe(board, row, col, N):
+    """Check the column on the left side"""
+    for i in range(col):
+        if board[row][i]:
             return False
-        # Check diagonals
-        if abs(board[i] - col) == abs(i - row):
+
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j]:
             return False
+
+    for i, j in zip(range(row, N, 1), range(col, -1, -1)):
+        if board[i][j]:
+            return False
+
     return True
 
 
-def solve_nqueens_util(board, row, n, solutions):
-    """method"""
-    if row == n:
-        solutions.append(board[:])
-        return
+def solve_nqueens(board, col, N, result):
+    """Base case: If all queens are placed, print the solution"""
+    if col >= N:
+        result.append([[i, row.index(1)] for i, row in enumerate(board)])
+        return True
 
-    for col in range(n):
-        if is_safe(board, row, col):
-            board[row] = col
-            solve_nqueens_util(board, row + 1, n, solutions)
-            board[row] = -1
+    for i in range(N):
+        if is_safe(board, i, col, N):
+            board[i][col] = 1
+
+            solve_nqueens(board, col + 1, N, result)
+
+            board[i][col] = 0
 
 
 def nqueens(N):
-    """method"""
+    """Check if N is an integer"""
     if not isinstance(N, int):
         print("N must be a number")
         sys.exit(1)
 
-    N = int(N)
     if N < 4:
         print("N must be at least 4")
         sys.exit(1)
 
-    board = [-1] * N
-    solutions = []
-    solve_nqueens_util(board, 0, N, solutions)
+    board = [[0 for _ in range(N)] for _ in range(N)]
+    result = []
 
-    for solution in solutions:
-        print([[i, solution[i]] for i in range(N)])
+    solve_nqueens(board, 0, N, result)
+
+    for solution in result:
+        print(solution)
 
 
 if __name__ == "__main__":
-    """run main"""
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
